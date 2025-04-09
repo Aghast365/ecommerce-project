@@ -2,7 +2,7 @@ import React, {useContext, useState} from 'react';
 import styled from 'styled-components';
 
 import {useParams} from 'react-router-dom';
-import fetchProducts from '../assets/productAPI.js';
+import fetchProducts from '../api/productAPI.js';
 import PageContext from '../context/PageContext';
 
 import QuantitySelector from '../components/QuantitySelector';
@@ -55,7 +55,7 @@ const Product = () => {
 		BulkPrices.push(
 			<Col key={quantity}>
 				<h3>{quantity}+ Units</h3>
-				<P>${Math.round(product.price*product.discounts[quantity],2)} each</P>
+				<P>${Math.round(product.price*product.discounts[quantity]*100)/100} each</P>
 			</Col>
 		);
 	}
@@ -110,7 +110,7 @@ const Product = () => {
 					<P>Total Price</P>
 					<P style={{marginLeft: 'auto', width:'fit-content'}}>
 						${
-							Math.round(product.price * Math.max(Math.floor(amt), 1) * (()=>{let discount = 1; for (let i in product.discounts) {if (Math.max(Math.floor(amt),1)>=Number(i)) {discount = product.discounts[i]}} return discount;})(), 2)
+							Math.round(product.price * Math.max(Math.floor(amt), 1) * (()=>{let discount = 1; for (let i in product.discounts) {if (Math.max(Math.floor(amt),1)>=Number(i)) {discount = product.discounts[i]}} return discount;})()*100)/100
 						}
 					</P>
 					<Button variant='warning' style={{width:'100%'}} onClick={addToCart}>Add To Cart</Button>

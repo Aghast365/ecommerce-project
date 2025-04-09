@@ -2,9 +2,10 @@ import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 
 import { Link } from 'react-router-dom';
+import PageContext from '../context/PageContext';
+
 import Search from './Search';
 import ProfileDropdown from './ProfileDropdown';
-import PageContext from '../context/PageContext';
 
 import siteLogo from '../assets/logo192.png';
 import { IoIosCart  } from "react-icons/io";
@@ -16,20 +17,11 @@ const Nav = styled.nav`
 	background-color: #CCCCCC;
 	margin: 0;
 	padding: 0;
-	position: fixed;
+	position: sticky;
 	top: 0;
 	display: flex;
 	flex-wrap: wrap;
 	
-`;
-
-const Padding = styled.div`
-	width: 100%;
-	height: 3rem;
-	display: block;
-	@media (max-width: 746px) {
-		height: 6rem;
-	}
 `;
 
 const Logo = styled.img`
@@ -105,6 +97,7 @@ const CartItemNumber = styled.span`
 	align-items: center;
 	dominant-baseline: mathematical;
 `
+
 const CartWithNumber = () => {
 	const {cart} = useContext(PageContext);
 	return (		
@@ -120,25 +113,20 @@ const NavSearch = styled(Search)`
 	flex-grow: 2;
 `
 
-
-
 const Navbar = () => {
 	return (
-		<>
-			<Nav>
-				<NavLink to="/"><Logo src={siteLogo} alt='VD Logo' /></NavLink>
-				<NavLink to="/">Home</NavLink>
-				<NavLink to="/products">Products</NavLink>
-				<NavLink to="/about">About</NavLink>
-				<Right>
-					<NavSearch />
-					<NavLink to="/cart"> <CartWithNumber /></NavLink>
-					<ProfileDropdown />
-				</Right>
-				<ClearFix />
-			</Nav>
-			<Padding />
-		</>
+		<Nav id='navbar'>
+			<NavLink to="/"><Logo src={siteLogo} alt='VD Logo' /></NavLink>
+			<NavLink to="/">Home</NavLink>
+			<NavLink to="/products">Products</NavLink>
+			<NavLink to="/about">About</NavLink>
+			<Right>
+				<NavSearch />
+				<NavLink to="/cart"> <CartWithNumber /></NavLink>
+				<ProfileDropdown />
+			</Right>
+			<ClearFix />
+		</Nav>
 	);
 };
 

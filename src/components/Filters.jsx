@@ -27,11 +27,7 @@ const FilterGroup = styled(Form.Group)`
 
 const Filters = ({filterState}) => {
 	const [filters, setFilters] = filterState;
-	
-	if (!filters.perPage) {
-		setFilters({...filters, perPage: 9});
-	}
-	
+
 	const handleChange = (e) => {
 		let key = e.target.name;
 		let value = e.target.value;

@@ -2,7 +2,7 @@ import React, {useState, useContext, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import styled from 'styled-components';
 
-import { UserContext } from '../context/UserContextProvider.jsx';
+import PageContext from '../context/PageContext';
 
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -46,7 +46,7 @@ const ForgotPassword = () => {
 	const [validated1, setValidated1] = useState(false);
 	const [validated2, setValidated2] = useState(false);
 	const [page, setPage] = useState(0);
-	const [user, setUser] = useContext(UserContext);
+	const {user, setUser} = useContext(PageContext);
 	const {passwordResetKey} = useParams()
 	const navigate = useNavigate()
 	
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
 		let valid = e.target.checkValidity();
 		e.preventDefault();
 		if(valid) {
-			setUser(1);
+			setUser(user);
 			navigate("/");
 		}
 		

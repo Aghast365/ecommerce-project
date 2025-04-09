@@ -1,9 +1,9 @@
 import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 
-import { UserContext } from '../context/UserContextProvider.jsx';
-
 import { Link } from 'react-router-dom';
+import PageContext from '../context/PageContext';
+
 import Dropdown from 'react-bootstrap/Dropdown';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
@@ -38,17 +38,17 @@ const NavItem = styled.div`
 `
 
 const ProfileMenuToggle = React.forwardRef(({ children, onClick, profileMenuState }, ref) => {
-	const [shown, setShown] = profileMenuState;
+	const [show, setShow] = profileMenuState;
 	return (
 		<NavItem
 			ref={ref}
 			onClick={(e) => {
 				e.preventDefault();
 				onClick(e);
-				setShown(!shown);
+				setShow(!show);
 			}}
 		>
-			{children}
+			<ProfileIcon alt='Profile' />
 		</NavItem>
 	);
 });
@@ -59,40 +59,34 @@ const ProfileMenu = styled(Dropdown)`
 `
 const ProfileDropdown = () => {
 
-	const [user, setUser] = useContext(UserContext);
-	const [loggedIn, setLoggedIn] = [user, setUser]
-	const profileMenuState = useState(false);
-	const [profileMenuShown, setProfileMenuShown] = profileMenuState;
-	const [loginFormShown, setLoginFormShown] = useState(false);
+	const { loggedIn, logOut, setUser } = useContext(PageContext);
+	const [showProfileMenu, setShowProfileMenu] = useState(false);
+	const [showLoginForm, setShowLoginForm] = useState(false);
 	
-	const LoginWithState = <LoginForm setLoggedIn={setLoggedIn} setLoginFormShown={setLoginFormShown} />;
+	const LoginWithState = <LoginForm setUser={setUser} setShowLoginForm={setShowLoginForm} />;
 
 	return (
 		<ProfileMenu 
 			autoClose='outside' 
-			onToggle={
-				(nextShow)=>{
-					if(!loginFormShown && !nextShow) {  
-						setProfileMenuShown(false)
-					}
+			onToggle={(nextShow)=>{
+				if(!showLoginForm && !nextShow) {  
+					setShowProfileMenu(false);
 				}
-			} 
-			show={profileMenuShown}
+			}} 
+			show={showProfileMenu}
 		>
-			<Dropdown.Toggle as={ProfileMenuToggle} profileMenuState={profileMenuState}>
-				<ProfileIcon alt='Profile' />
-			</Dropdown.Toggle>
+			<Dropdown.Toggle as={ProfileMenuToggle} profileMenuState={[showProfileMenu, setShowProfileMenu]} />
 			<Dropdown.Menu>
-				{user != null &&
+				{loggedIn &&
 					<div>
-						<Dropdown.Item as={Link} to='/profile' onClick={() => setProfileMenuShown(false)}>My Info</Dropdown.Item>
-						<Dropdown.Item onClick={() => {setLoggedIn(null)}}>Log Out</Dropdown.Item>
+						<Dropdown.Item as={Link} to='/profile' onClick={() => setShowProfileMenu(false)}>My Info</Dropdown.Item>
+						<Dropdown.Item onClick={logOut}>Log Out</Dropdown.Item>
 					</div>
 				}
-				{user == null &&
+				{!loggedIn &&
 					<div>
-						<Dropdown.Item as={Link} to='/register' onClick={() => setProfileMenuShown(false)}>Sign Up</Dropdown.Item>
-						<OverlayTrigger rootClose='true' trigger='click' placement='left' overlay={LoginWithState} onToggle={(nextShow)=>setLoginFormShown(nextShow)} show={loginFormShown}>
+						<Dropdown.Item as={Link} to='/register' onClick={() => setShowProfileMenu(false)}>Sign Up</Dropdown.Item>
+						<OverlayTrigger rootClose='true' trigger='click' placement='left' overlay={LoginWithState} onToggle={(nextShow)=>setShowLoginForm(nextShow)} show={showLoginForm}>
 							<Dropdown.Item>Log In</Dropdown.Item>
 						</OverlayTrigger>
 					</div>

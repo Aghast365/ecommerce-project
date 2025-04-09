@@ -1,7 +1,8 @@
 import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 
-import { UserContext } from '../context/UserContextProvider.jsx';
+import PageContext from '../context/PageContext';
+import {deleteUser, fetchUserData} from '../api/userAPI.js';
 
 import {Link, useNavigate} from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
@@ -138,7 +139,7 @@ const Check = styled(Form.Check)`
 `
 
 const Profile = () => {
-	const [user, setUser] = useContext(UserContext);
+	const {user, setUser, loggedIn} = useContext(PageContext);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const navigate = useNavigate();
 	
@@ -146,7 +147,7 @@ const Profile = () => {
 	const handleShow = () => setShowDeleteDialog(true);
 	const handleDelete = () => {
 		setShowDeleteDialog(false);
-		setUser(null);
+		setUser(deleteUser(user));
 		navigate('/');
 	}
 	
@@ -154,10 +155,10 @@ const Profile = () => {
 		<CenteredCard>
 			<Header><h1>My Information</h1></Header>
 			<Body>
-			{!user &&
+			{!loggedIn &&
 				<Card.Text>Not logged in, nothing to display.</Card.Text>
 			}
-			{user && <>
+			{loggedIn && <>
 				<h2>Address</h2>
 				<InfoBox>
 					<Address name="Joe Smith" street1="759 Walabee Ln" street2="Apt 754C" city="Centerville" state="CA" zip="94126"/>

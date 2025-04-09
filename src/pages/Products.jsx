@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import styled from 'styled-components';
 
-import fetchProducts from '../assets/productAPI.js';
+import fetchProducts from '../api/productAPI.js';
 import PageContext from '../context/PageContext.jsx';
 
 import ProductGrid from '../components/ProductGrid';
@@ -14,7 +14,7 @@ import BCol from 'react-bootstrap/Col';
 import BButton from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
-import { IoIosList, IoMdApps } from "react-icons/io";
+import { IoIosArrowDropleft , IoIosArrowDropright } from "react-icons/io";
 
 const Row = styled(BRow)`
 	margin:0;
@@ -30,11 +30,11 @@ const Button = styled(BButton)`
 	line-height: 0;
 `
 
-const ListIcon = styled(IoIosList).attrs({alt: 'List View'})`
+const PrevPage = styled(IoIosArrowDropleft).attrs({alt: 'Previous Page'})`
 	width:1rem;
 	height:1rem;
 `
-const GridIcon = styled(IoMdApps).attrs({alt: 'Grid View'})`
+const NextPage = styled(IoIosArrowDropright).attrs({alt: 'Next Page'})`
 	width:1rem;
 	height:1rem;
 `
@@ -56,18 +56,32 @@ const ResultsTopNavigation = styled.div.attrs({id: 'results-top-navigation'})`
 
 const Products = () => {
 	
-	const itemsPerPage = 9;
+	const perPage = 9;
 	const [page, setPage] = useState(1);
 	const {filters, setFilters} = useContext(PageContext);
 	const [products, setProducts] = useState(fetchProducts(filters).filteredProducts);
 	const [results, setResults] = useState(0);
 	
+	let startItem = (page-1)*perPage + Math.min(results,1);
+	let endItem = Math.max(Math.min((page)*perPage, results), startItem);
+	
+	const nextPage = () => {
+		if ( !(endItem >= results))
+			setPage(page+1);
+	}
+	const prevPage = () => {
+		setPage(Math.max(page-1, 1));
+	}
+	
 	
 	useEffect(() => {
-		const {totalResults, filteredProducts} = fetchProducts(filters);
+		const {totalResults, filteredProducts} = fetchProducts({...filters, page: page, perPage: perPage});
 		setProducts(filteredProducts);
 		setResults(totalResults);
-	}, [filters])
+		
+		if ((page-1)*perPage + Math.min(results,1) > totalResults) prevPage();
+		
+	}, [filters, page])
 	
 	
 	return (
@@ -87,10 +101,10 @@ const Products = () => {
 				</div>
 				<hr/>
 				<ResultsTopNavigation>
-					<span>{(page-1)*itemsPerPage + Math.min(results,1)} - {Math.min((page)*itemsPerPage, results)} of {results} results</span>			
+					<span>{startItem} - {endItem} of {results} results</span>			
 					<ButtonGroup style={{justifySelf: 'end'}}>
-						<Button variant='secondary'><ListIcon /></Button>
-						<Button variant='secondary'><GridIcon /></Button>
+						<Button onClick={prevPage} variant='secondary'><PrevPage /></Button>
+						<Button onClick={nextPage} variant='secondary'><NextPage /></Button>
 					</ButtonGroup>
 				</ResultsTopNavigation>
 			</Row>

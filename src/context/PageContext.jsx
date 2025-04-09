@@ -7,16 +7,18 @@ const currentUser = () => {return Number(localStorage.getItem('user')) || -1;};
 
 const PageContextProvider = ({children}) => {
 	const [user, setUser] = useState(currentUser());
-	const [filters, setFilters] = useState({});
-	const [searchHistory, setSearchHistory] = useState([]);
-	const [cart, setCart] = useState([]);
+	const [filters, setFilters] = useState(fetchUserData('filters', user));
+	const [searchHistory, setSearchHistory] = useState(fetchUserData('searchHistory', user));
+	const [cart, setCart] = useState(fetchUserData('cart', user));
+	const [loggedIn, setLoggedIn] = useState(user != -1);
 	
 	useEffect(() => {
 		localStorage.setItem('user', user);
 		
 		setFilters(fetchUserData('filters', user));
 		setSearchHistory(fetchUserData('searchHistory', user));
-		setCart(fetchUserData('cart', user))
+		setCart(fetchUserData('cart', user));
+		setLoggedIn(user != -1);
     }, [user]);
 	
 	useEffect(() => {
@@ -28,13 +30,13 @@ const PageContextProvider = ({children}) => {
 	useEffect(()=>{
 		postUserData('cart', cart, user);
 	}, [cart]);
-	
-	const loggedIn = () => {
-		return user != -1;
+
+	const logOut = () => {
+		setUser(-1);
 	}
 	
 	return (
-		<PageContext.Provider value={{user, setUser, loggedIn, filters, setFilters, searchHistory, setSearchHistory, cart, setCart}}>
+		<PageContext.Provider value={{user, setUser, loggedIn, logOut, filters, setFilters, searchHistory, setSearchHistory, cart, setCart}}>
 			{children}
 		</PageContext.Provider>
 	);

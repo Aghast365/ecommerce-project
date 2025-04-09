@@ -1,11 +1,11 @@
 import React, {useState, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 
-import fetchProducts from '../assets/productAPI.js';
+import {Link, useNavigate, useLocation} from 'react-router-dom';
 import PageContext from '../context/PageContext';
+import fetchProducts from '../api/productAPI.js';
 
 import Dropdown from 'react-bootstrap/Dropdown';
-import {Link, useNavigate, useLocation} from 'react-router-dom';
 
 import { IoMdSearch, IoMdClose } from "react-icons/io";
 import { MdHistory } from "react-icons/md";
@@ -74,11 +74,13 @@ const Search = (attrs) => {
 		if (!nextShow) setHover(false);
 	};
 	const setSearchFilter = (filter) => {
-		setSearchHistory([...new Set([filter].concat(searchHistory))].slice(0,5));
-		
-		setFilters({...filters, search: filter});
-		if (location != '/products') navigate('/products');
-		setSearch('');
+		if (filter) {
+			setSearchHistory([...new Set([filter].concat(searchHistory))].slice(0,5));
+			
+			setFilters({...filters, search: filter});
+			if (location != '/products') navigate('/products');
+			setSearch('');
+		}
 	}
 	const onKeyUp = (e) => {
 		if (e.key === 'Enter') {

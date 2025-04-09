@@ -2,7 +2,8 @@ import React, {useState, useContext} from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
-import { UserContext } from '../context/UserContextProvider.jsx';
+import PageContext from '../context/PageContext';
+import {changePassword} from '../api/userAPI.js';
 
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -44,10 +45,11 @@ const ClearFix = styled.span`
 
 const ChangePassword = () => {
 	const [validated, setValidated] = useState(false);
-	const [user, setUser] = useContext(UserContext);
+	const {user, setUser} = useContext(PageContext);
 	const navigate = useNavigate();
 	
 	const validateForm = (e) => {
+		const old = document.querySelector('#old-password');
 		const pass = document.querySelector('#new-password');
 		const conf = document.querySelector('#confirm-password');
 		if (conf.value != pass.value) {
@@ -57,9 +59,16 @@ const ChangePassword = () => {
 		}
 		let valid = e.target.checkValidity();
 		
+		old.setCustomValidity("");
 		e.preventDefault();
 		if(valid) {
-			navigate("/profile");
+			let response = changePassword(old.value, pass.value, user);
+			if (response == 0) {
+				old.setCustomValidity("incorrect password");
+			}
+			else {
+				navigate("/profile");
+			}
 		}
 		
 		setValidated(true);

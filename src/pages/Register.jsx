@@ -2,7 +2,8 @@ import React, {useState, useContext} from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
-import { UserContext } from '../context/UserContextProvider.jsx';
+import PageContext from '../context/PageContext';
+import {signUp} from '../api/userAPI.js';
 
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -44,23 +45,39 @@ const ClearFix = styled.span`
 
 const Register = () => {
 	const [validated, setValidated] = useState(false);
-	const [user, setUser] = useContext(UserContext);
+	const [emailMessage, setEmailMessage] = useState("Please enter a valid email.");
+	const {user, setUser} = useContext(PageContext);
 	const navigate = useNavigate();
 	
 	const validateForm = (e) => {
+		const email = document.querySelector('#signup-email');
 		const pass = document.querySelector('#signup-password');
 		const conf = document.querySelector('#signup-confirm-password');
+		const marketing = document.querySelector('#allow-marketing');
 		if (conf.value != pass.value) {
 			conf.setCustomValidity("Passwords do not match.");
 		} else {
 			conf.setCustomValidity("");
 		}
+		
+		email.setCustomValidity("");
+		if (!email.checkValidity()) {
+			setEmailMessage("Please enter a valid email.");
+		}
+		
 		let valid = e.target.checkValidity();
 		
 		e.preventDefault();
 		if(valid) {
-			setUser(1);
-			navigate("/");
+			let response = signUp(email.value, pass.value);
+			if (response == 0) {
+				setEmailMessage("An account already exists using this email.");
+				email.setCustomValidity("An account already exists using this email.");
+			} else {
+				email.setCustomValidity("");
+				setUser(response);
+				navigate('/');
+			}
 		}
 		
 		setValidated(true);
@@ -74,13 +91,13 @@ const Register = () => {
 					<Group hasValidation>
 						<Form.Control id='signup-email' type='email' placeholder='Email' required />
 						<Form.Control.Feedback type='invalid'>
-							Please enter a valid email.
+							{emailMessage}
 						</Form.Control.Feedback>
 					</Group>
 					<Group hasValidation>
 						<Form.Control id='signup-password' type='password' placeholder='Password' required />
 						<Form.Control.Feedback type='invalid'>
-							Please enter a valid password.
+							Password cannot be blank.
 						</Form.Control.Feedback>
 					</Group>
 					<hr/>
