@@ -31,7 +31,7 @@
 import products from '../assets/database.js';
 
 const fetchProducts = ({id, search, searchName, sort, sortDir, category, dimType, dimx, dimy, dimz, materials, priceFrom, priceTo, perPage, page}={}) => {
-	let filteredProducts = products;
+	let filteredProducts = structuredClone(products);
 	if (id)
 		filteredProducts = filteredProducts.filter(item=>item.id==id);
 	if (category)

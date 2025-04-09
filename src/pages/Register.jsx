@@ -69,7 +69,7 @@ const Register = () => {
 		
 		e.preventDefault();
 		if(valid) {
-			let response = signUp(email.value, pass.value);
+			let response = signUp(email.value, pass.value, marketing.checked);
 			if (response == 0) {
 				setEmailMessage("An account already exists using this email.");
 				email.setCustomValidity("An account already exists using this email.");

@@ -10,7 +10,10 @@ const defaultValues = {
 }
 
 const fetchUserData = (key, user) => {
-	return JSON.parse(localStorage.getItem(key+'-'+user)) || defaultValues[key] || -1;
+	let response = localStorage.getItem(key+'-'+user);
+	if (response != undefined) return JSON.parse(response);
+	else if (defaultValues[key] != undefined) return defaultValues[key];
+	else return -1;
 }
 
 const postUserData = (key, data, user) => {
@@ -53,7 +56,7 @@ const signUp = (email, password, consent) => {
 	}
 	userDB.push(newUser);
 	localStorage.setItem('userDB', JSON.stringify(userDB));
-	postUserData('consent', consent, newUser.sessionKey);
+	postUserData('marketingConsent', consent, newUser.sessionKey);
 	return newUser.sessionKey;
 }
 

@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import styled from 'styled-components';
 
 import PageContext from '../context/PageContext';
-import {deleteUser, fetchUserData} from '../api/userAPI.js';
+import {deleteUser, fetchUserData, postUserData} from '../api/userAPI.js';
 
 import {Link, useNavigate} from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
@@ -89,17 +89,22 @@ const Gap = styled.span`
 
 const Address = ({name, street1, street2, city, state, zip}) => {
 	return (
-		<div>
-			<P>{name}</P>
-			<P>{street1}</P>
-			<P>{street2}</P>
-			<P>
-				<span>{city}, </span>
-				<span>{state}</span>
-				<Gap/>
-				<span>{zip}</span>
-			</P>
-		</div>
+		<>
+		<h2>Address</h2>
+		<InfoBox>
+			<div>
+				<P>{name}</P>
+				<P>{street1}</P>
+				<P>{street2}</P>
+				<P>
+					<span>{city}, </span>
+					<span>{state}</span>
+					<Gap/>
+					<span>{zip}</span>
+				</P>
+			</div>
+		</InfoBox>
+		</>
 	);
 }
 
@@ -117,16 +122,21 @@ const CardType = styled(Col)`
 
 const Billing = ({type, name, number, zip}) => {
 	return (
-		<Row>
-			<CardType md='auto'>
-				<div><span><img src={Visa} height="20" /></span></div>
-			</CardType>
-			<Col md='auto'>
-				<P>{name}</P>
-				<P>{number}</P>
-				<P>Zip: {zip}</P>
-			</Col>
-		</Row>
+		<>
+		<h2>Billing</h2>
+		<InfoBox>
+			<Row>
+				<CardType md='auto'>
+					<div><span><img src={Visa} height="20" /></span></div>
+				</CardType>
+				<Col md='auto'>
+					<P>{name}</P>
+					<P>{number}</P>
+					<P>Zip: {zip}</P>
+				</Col>
+			</Row>
+		</InfoBox>
+		</>
 	)
 }
 
@@ -140,6 +150,7 @@ const Check = styled(Form.Check)`
 
 const Profile = () => {
 	const {user, setUser, loggedIn} = useContext(PageContext);
+	const [marketing, setMarketing] = useState(fetchUserData('marketingConsent', user));
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const navigate = useNavigate();
 	
@@ -150,6 +161,11 @@ const Profile = () => {
 		setUser(deleteUser(user));
 		navigate('/');
 	}
+	const handleChange = (e) => {
+		
+		postUserData('marketingConsent', !marketing, user);
+		setMarketing(!marketing);
+	}
 	
 	return (
 		<CenteredCard>
@@ -159,19 +175,16 @@ const Profile = () => {
 				<Card.Text>Not logged in, nothing to display.</Card.Text>
 			}
 			{loggedIn && <>
-				<h2>Address</h2>
-				<InfoBox>
-					<Address name="Joe Smith" street1="759 Walabee Ln" street2="Apt 754C" city="Centerville" state="CA" zip="94126"/>
-				</InfoBox>
+				
+				{/*<Address name="Joe Smith" street1="759 Walabee Ln" street2="Apt 754C" city="Centerville" state="CA" zip="94126"/>
 				<hr/>
-				<h2>Billing</h2>
-				<InfoBox>
-					<Billing type="Visa" name="Joe Smith" number="XXXX-XXXX-7834" zip="94126" />
-				</InfoBox>
-				<hr/>
+				
+				<Billing type="Visa" name="Joe Smith" number="XXXX-XXXX-7834" zip="94126" />
+				<hr/>*/}
+				
 				<h2>Account</h2>
 				<Link to='/change-password'><Button>Change Password</Button></Link>
-				<Check label="Allow marketing emails" />
+				<Check label="Allow marketing emails" id='marketing-consent' checked={marketing} onChange={handleChange} />
 				<ClearFix/>
 				<hr />
 				<FRight>
