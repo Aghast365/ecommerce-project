@@ -8,6 +8,47 @@ import Alert from 'react-bootstrap/Alert';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
+const Right = styled.div`
+	display: table;
+	position: absolute;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	right:15px;
+	
+	& span {
+		display: table-cell;
+		vertical-align: middle;
+	}
+	& span a {
+		margin-left: 10px;
+	}
+`
+const ClearFix = styled.span`
+	display:block;
+	clear:both;
+	line-height:0;
+	height:0;
+`
+
+const Box = styled(Container)`
+	position:relative;
+	background-color: #eee;
+	display:block;
+	padding: 10px 15px;
+`
+
+const InfoBox = ({children}) => {
+	return (
+	<Box>
+		{children}
+	</Box>
+	);
+};
 
 const P = styled.p`
 	font-size: 14pt;
@@ -19,6 +60,77 @@ const FlexRow = styled.div`
 	justify-content: space-between;
 	flex-wrap: wrap;
 `
+
+
+const Gap = styled.span`
+	display: inline-block;
+	width:.25rem;
+`
+
+const Address = ({address}) => {
+	const {firstname, lastname, street1, street2, city, state, zip} = address;
+	const P = styled.p`
+		margin:0;
+		padding:0;
+	`
+	return (
+		<>
+		<InfoBox>
+			<div>
+				<P>{firstname} {lastname}</P>
+				<P>{street1}</P>
+				<P>{street2}</P>
+				<P>
+					<span>{city}, </span>
+					<span>{state}</span>
+					<Gap/>
+					<span>{zip}</span>
+				</P>
+			</div>
+		</InfoBox>
+		</>
+	);
+}
+
+const CardType = styled(Col)`
+	& div {
+		height: 100%;
+		display: table;
+		margin-right: 12px;
+	}
+	& div span {
+		display: table-cell;
+		vertical-align: middle;
+		baseline: middle;
+	}
+`
+
+const Billing = ({billing}) => {
+	const {useshipping, firstname, lastname, street1, street2, city, state, zip, paymenttype, cardfirstname, cardlastname, cardnumber, cv} = billing;
+	const P = styled.p`
+		margin:0;
+		padding:0;
+	`
+	return (
+		<>
+		{useshipping !== 'true' &&
+			<Address address={{firstname, lastname, street1, street2, city, state, zip}} />
+		}
+		<InfoBox>
+			<Row>
+				<Col md='auto'>
+					<P style={{fontWeight: 'bold'}}>{paymenttype.charAt(0).toUpperCase() + paymenttype.slice(1)}</P>
+					<P>{cardfirstname} {cardlastname}</P>
+					<P>{cardnumber}</P>
+					<P>CV: {cv}</P>
+				</Col>
+			</Row>
+		</InfoBox>
+		</>
+	)
+}
+
+
 
 const CartItem = ({product, pricePer, discount, cartItem}) => {
 	let quantity = cartItem.quantity;
@@ -68,7 +180,7 @@ const CartItem = ({product, pricePer, discount, cartItem}) => {
 	)
 }
 
-const OrderSummary = ({placeOrder}) => {
+const OrderSummary = ({placeOrder, address, billing}) => {
 	
 	const {cart, setCart} = useContext(PageContext);
 	
@@ -117,6 +229,12 @@ const OrderSummary = ({placeOrder}) => {
 				<Card>
 					<Card.Header as='h3'>Cart Summary</Card.Header>
 					<Card.Body style={{display: 'flex', flexDirection: 'column'}}>
+						<h4>Address</h4>
+						<Address address={address} />
+						<hr />
+						<h4>Billing</h4>
+						<Billing billing={billing}/>
+						<hr />
 						<FlexRow><span>Subtotal:</span> <span>${subTotal}</span></FlexRow>
 						<FlexRow><span>Tax:</span> <span>${tax}</span></FlexRow>
 						<FlexRow><span>Total:</span> <span>${total}</span></FlexRow>

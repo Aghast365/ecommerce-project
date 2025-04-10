@@ -79,12 +79,12 @@ const Checkout = () => {
 			}
 			{page==3 &&
 				<>
-					<OrderSummary placeOrder={placeOrder}/>
+					<OrderSummary placeOrder={placeOrder} address={address} billing={billing}/>
 					<Button variant='warning' onClick={back} style={{marginRight: 'auto'}}>&lt; Previous </Button>
 				</>
 			}
 			{page == 4 &&
-				<OrderConfirmation />
+				<OrderConfirmation/>
 			}
 		</Col>
 	);

@@ -127,7 +127,7 @@ const Billing = ({type, name, number, zip}) => {
 		<InfoBox>
 			<Row>
 				<CardType md='auto'>
-					<div><span><img src={Visa} height="20" /></span></div>
+					<div><span>{type}</span></div>
 				</CardType>
 				<Col md='auto'>
 					<P>{name}</P>
