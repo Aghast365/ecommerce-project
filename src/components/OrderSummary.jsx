@@ -1,7 +1,6 @@
 import React, {useContext} from 'react';
 import styled from 'styled-components';
 
-import {Link} from 'react-router-dom';
 import PageContext from '../context/PageContext';
 import fetchProducts from '../api/productAPI.js';
 
@@ -9,10 +8,6 @@ import Alert from 'react-bootstrap/Alert';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-
-import QuantitySelector from '../components/QuantitySelector';
-
-import {IoIosTrash} from 'react-icons/io';
 
 const P = styled.p`
 	font-size: 14pt;
@@ -24,22 +19,12 @@ const FlexRow = styled.div`
 	justify-content: space-between;
 	flex-wrap: wrap;
 `
-const TrashIcon = styled(IoIosTrash )`
-	width: 1.5rem;
-	height: 1.5rem;
-`
 
-const CartItem = ({product, pricePer, discount, cartItemState}) => {
-	const [cartItem, setCartItem] = cartItemState;
-
+const CartItem = ({product, pricePer, discount, cartItem}) => {
 	let quantity = cartItem.quantity;
 	let discountPercent = discount < 1 ? Math.round((1-discount)*100*100)/100 + '%' : 'None';
 	let discountPricePer = pricePer*discount;
 	let total = pricePer*discount*quantity;
-	
-	let amt = cartItem.quantity;
-	let setAmt = (amt) => {setCartItem({...cartItem, quantity: amt})};
-	
 	
 	return (
 		<Alert variant='secondary' key={cartItem.id}>
@@ -54,7 +39,7 @@ const CartItem = ({product, pricePer, discount, cartItemState}) => {
 					<h3>{product.name}</h3>
 				</FlexRow>
 				<FlexRow style={{marginTop: 'auto'}}>
-					<span style={{verticalAlign: 'middle', display: 'inline', marginRight: '12px'}}> Amount: </span><QuantitySelector style={{marginTop: 'auto'}} quantityState={[amt, setAmt]} />
+					<span style={{verticalAlign: 'middle', display: 'inline', marginRight: '12px'}}> Amount: {cartItem.quantity}</span>
 				</FlexRow>
 			</div>
 			
@@ -78,29 +63,16 @@ const CartItem = ({product, pricePer, discount, cartItemState}) => {
 					<span style={{fontSize: '16pt'}}>${total}</span>
 				</FlexRow>
 			</div>
-			
-			<div className='vr' style={{margin: '0 12px'}}/>
-			
-			<div style={{display: 'flex', flexDirection: 'column'}}>
-				<Button variant='secondary' style={{margin: 'auto'}} onClick={()=>setCartItem(null)}><TrashIcon /></Button>
-			</div>
 		</FlexRow>
 		</Alert>
 	)
 }
 
-const Cart = () => {
+const OrderSummary = ({placeOrder}) => {
+	
 	const {cart, setCart} = useContext(PageContext);
 	
 	const cartItem = (i) => structuredClone(cart[i]);
-	const setCartItem = (i) => {
-		return (newCartItem) => {
-			let newCart = structuredClone(cart);
-			if (!newCartItem) newCart.splice(i, 1);
-			else newCart[i] = newCartItem;
-			setCart(newCart);
-		}
-	}
 	
 	let CartItems = [];
 	let subTotal = 0;
@@ -124,7 +96,7 @@ const Cart = () => {
 				product={product}
 				pricePer={pricePer}
 				discount={discount}
-				cartItemState={[cartItem(i), setCartItem(i)]} 
+				cartItem={cartItem(i)} 
 			/>
 		);
 	}
@@ -133,9 +105,9 @@ const Cart = () => {
 	let total = subTotal+tax;
 	
 	return (
-		<div style={{padding: '2rem', width:'100%'}}>
+		<div style={{flex: '1 1 auto', flexWrap: 'wrap'}}>
 			<FlexRow>
-				<h2>Cart</h2>
+				<h2>Order Summary</h2>
 			</FlexRow>
 			<hr />
 			<FlexRow>
@@ -144,21 +116,18 @@ const Cart = () => {
 				</div>
 				<Card>
 					<Card.Header as='h3'>Cart Summary</Card.Header>
-					<Card.Body>
+					<Card.Body style={{display: 'flex', flexDirection: 'column'}}>
 						<FlexRow><span>Subtotal:</span> <span>${subTotal}</span></FlexRow>
 						<FlexRow><span>Tax:</span> <span>${tax}</span></FlexRow>
 						<FlexRow><span>Total:</span> <span>${total}</span></FlexRow>
 						<hr/>
-						{cart.length > 0 ?
-							<Button variant='warning' as={Link} to='/checkout'>Proceed to Checkout</Button>
-							:
-							<Button variant='secondary' disabled>Proceed to Checkout</Button>
-						}	
+						<Button style={{marginLeft: 'auto'}} onClick={placeOrder} variant='warning'>Place Order</Button>
 					</Card.Body>
 				</Card>
 			</FlexRow>
 		</div>
 	);
+	
 }
 
-export default Cart;
+export default OrderSummary;
