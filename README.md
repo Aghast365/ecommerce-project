@@ -1,7 +1,5 @@
 # Ecommerce-Project
 
-## Setup
-
 This app was created using `npx create-react-app`, which installs the following packages by default:
 
  - react
@@ -20,9 +18,13 @@ in addition, the following packages were installed and are required for the site
  
 these components were used to style components throughout the site. In particular, react-bootstrap was used for most popups/dropdown menus.
 
-running the command `npm install` in the main directory should automatically install all these packages if they have not been installed already
+## Setup
 
-run the command `npm start` in the main directory to start the dev server
+with nodejs installed,
+
+ 1. clone the github repository at https://github.com/Aghast365/ecommerce-project
+ 2. run `npm install` to install the dependencies
+ 3. run `npm start` to start the dev server
 
 ## Features
 
